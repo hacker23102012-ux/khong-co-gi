@@ -38,7 +38,7 @@
         header {
             text-align: center;
             color: #d63384;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             z-index: 2;
         }
 
@@ -58,9 +58,9 @@
             display: inline-block;
         }
 
-        /* Thanh điều khiển nhạc */
+        /* Thanh nhập nhạc */
         .music-bar {
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.9);
             padding: 10px 18px;
@@ -68,10 +68,10 @@
             display: flex;
             gap: 10px;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             z-index: 5;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            max-width: 500px;
+            max-width: 480px;
             width: 100%;
         }
 
@@ -89,7 +89,7 @@
             background: #ff4757;
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 8px 18px;
             border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
@@ -100,17 +100,6 @@
         .music-bar button:hover {
             background: #ff6b81;
             transform: scale(1.03);
-        }
-
-        .current-song {
-            font-size: 0.85rem;
-            color: #d63384;
-            margin-bottom: 20px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.5);
-            padding: 5px 15px;
-            border-radius: 15px;
-            z-index: 2;
         }
 
         /* Lưới 20 hộp quà */
@@ -221,11 +210,9 @@
 
     <div class="music-bar">
         <span>🎵</span>
-        <input type="text" id="ytUrlInput" placeholder="Dán ID YouTube hoặc link nhạc...">
-        <button onclick="changeMusic()">Phát Nhạc</button>
+        <input type="text" id="ytUrlInput" placeholder="Dán ID YouTube hoặc link bài hát...">
+        <button onclick="changeMusic()">Đổi Nhạc</button>
     </div>
-
-    <div class="current-song" id="songTitle">🎶 Đang phát: Playlist Tự Động (Auto Loop)</div>
 
     <div class="gifts-grid" id="giftsContainer"></div>
 
@@ -262,14 +249,7 @@
             { icon: "❤️", text: "Cuối cùng, chúc bạn luôn được trân trọng, yêu thương và mãi mãi hạnh phúc!" }
         ];
 
-        // Danh sách ID nhạc tự động chuyển (Playlist gồm các bài lofi/chill hay)
-        const playlist = [
-            { id: "2Vv-BfVoq4g", name: "Ed Sheeran - Perfect" },
-            { id: "5qap5aO4i9A", name: "Lofi Hip Hop Radio - Beats to Relax/Study" },
-            { id: "jfKfPfyJRdk", name: "Lofi Girl - Chill Radio" }
-        ];
-        let currentSongIndex = 0;
-
+        // Render 20 Hộp quà
         const container = document.getElementById('giftsContainer');
         wishes.forEach((item, index) => {
             const card = document.createElement('div');
@@ -281,8 +261,10 @@
         });
 
         function openGift(index) {
+            ensurePlayMusic(); // Kích hoạt phát nhạc khi tương tác
             const card = document.getElementById(`gift-${index}`);
             if (card.classList.contains('opened')) return;
+
             card.classList.add('opened');
             card.querySelector('.gift-icon').innerText = wishes[index].icon;
             document.getElementById('modalIcon').innerText = wishes[index].icon;
@@ -294,6 +276,7 @@
             document.getElementById('wishModal').style.display = 'none';
         }
 
+        // Tạo hoa rơi
         function createFlower() {
             const flower = document.createElement('div');
             flower.className = 'flower-fall';
@@ -306,43 +289,58 @@
         }
         setInterval(createFlower, 300);
 
-        // YouTube API & Auto Loop sau 0.5s chuyển bài
+        // Quản lý YouTube Player & Autoplay
         let player;
+        let isPlaying = false;
+        const defaultVideoId = "2Vv-BfVoq4g"; // Nhạc mặc định
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '0',
                 width: '0',
-                videoId: playlist[0].id,
-                playerVars: { 'autoplay': 1, 'controls': 0 },
+                videoId: defaultVideoId,
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 0 },
                 events: {
-                    'onReady': (e) => e.target.playVideo(),
+                    'onReady': (e) => {
+                        e.target.playVideo();
+                    },
                     'onStateChange': onPlayerStateChange
                 }
             });
         }
 
         function onPlayerStateChange(event) {
-            // Khi bài hát kết thúc (State = 0)
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+            }
+            // Khi hết bài, chờ 0.5s rồi lặp lại hoặc phát lại bài đó
             if (event.data === YT.PlayerState.ENDED) {
                 setTimeout(() => {
-                    currentSongIndex = (currentSongIndex + 1) % playlist.length;
-                    player.loadVideoById(playlist[currentSongIndex].id);
-                    document.getElementById('songTitle').innerText = `🎶 Đang phát: ${playlist[currentSongIndex].name}`;
-                }, 500); // Chờ đúng 0,5 giây rồi đổi bài tiếp theo
+                    player.playVideo();
+                }, 500);
             }
         }
 
+        // Tự động kích hoạt âm thanh nếu bị trình duyệt chặn
+        function ensurePlayMusic() {
+            if (player && player.playVideo && !isPlaying) {
+                player.playVideo();
+            }
+        }
+        document.body.addEventListener('click', ensurePlayMusic, { once: true });
+
+        // Đổi nhạc
         function changeMusic() {
             const val = document.getElementById('ytUrlInput').value.trim();
-            if (!val) return alert("Vui lòng nhập ID hoặc Link YouTube!");
+            if (!val) return;
+
             let videoId = val;
             if (val.includes("v=")) videoId = val.split("v=")[1].split("&")[0];
             else if (val.includes("youtu.be/")) videoId = val.split("youtu.be/")[1].split("?")[0];
 
             if (player && player.loadVideoById) {
                 player.loadVideoById(videoId);
-                document.getElementById('songTitle').innerText = `🎶 Đang phát: Nhạc tự chọn`;
-                alert("Đã chuyển bài thành công! 🎉");
+                isPlaying = true;
             }
         }
     </script>
