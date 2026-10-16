@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chúc Mừng Ngày 20/10 💖</title>
-    <!-- Font Google cho xịn -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -25,7 +24,6 @@
             position: relative;
         }
 
-        /* Hiệu ứng hoa rơi */
         .flower-fall {
             position: fixed;
             top: -20px;
@@ -34,16 +32,13 @@
             animation: fall linear infinite;
         }
         @keyframes fall {
-            to {
-                transform: translateY(105vh) rotate(360deg);
-            }
+            to { transform: translateY(105vh) rotate(360deg); }
         }
 
-        /* Header */
         header {
             text-align: center;
             color: #d63384;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             z-index: 2;
         }
 
@@ -63,17 +58,17 @@
             display: inline-block;
         }
 
-        /* Khung điều chỉnh Nhạc Youtube */
+        /* Thanh điều khiển nhạc */
         .music-bar {
-            background: rgba(255, 255, 255, 0.55);
+            background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
             padding: 10px 18px;
             border-radius: 30px;
             display: flex;
             gap: 10px;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             z-index: 5;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             max-width: 500px;
@@ -107,7 +102,18 @@
             transform: scale(1.03);
         }
 
-        /* Lưới 20 Hộp quà */
+        .current-song {
+            font-size: 0.85rem;
+            color: #d63384;
+            margin-bottom: 20px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px 15px;
+            border-radius: 15px;
+            z-index: 2;
+        }
+
+        /* Lưới 20 hộp quà */
         .gifts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -128,7 +134,6 @@
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            position: relative;
         }
 
         .gift-card:hover {
@@ -157,7 +162,7 @@
             color: #d63384;
         }
 
-        /* Popup hiển thị Lời chúc */
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -179,7 +184,6 @@
             text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             animation: popUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
         }
 
         @keyframes popUp {
@@ -187,18 +191,9 @@
             to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-icon {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-        }
-
-        .modal-text {
-            font-size: 1.05rem;
-            color: #333;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
+        .modal-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .modal-text { font-size: 1.05rem; color: #333; line-height: 1.6; margin-bottom: 25px; }
+        
         .close-btn {
             background: #ff4757;
             color: white;
@@ -210,18 +205,13 @@
             font-size: 0.95rem;
         }
 
-        /* Khung Player YouTube ngầm */
         #yt-player-container {
-            position: absolute;
-            width: 1px; height: 1px;
-            opacity: 0;
-            pointer-events: none;
+            position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-    <!-- Khung phát Youtube ngầm -->
     <div id="yt-player-container"><div id="player"></div></div>
 
     <header>
@@ -229,17 +219,16 @@
         <p>Mỗi món quà mang một lời chúc bí mật dành riêng cho bạn! 💖</p>
     </header>
 
-    <!-- Nhập nhạc Youtube -->
     <div class="music-bar">
         <span>🎵</span>
-        <input type="text" id="ytUrlInput" placeholder="Dán link YouTube tại đây...">
-        <button onclick="changeMusic()">Đổi Nhạc</button>
+        <input type="text" id="ytUrlInput" placeholder="Dán ID YouTube hoặc link nhạc...">
+        <button onclick="changeMusic()">Phát Nhạc</button>
     </div>
 
-    <!-- Danh sách 20 hộp quà -->
+    <div class="current-song" id="songTitle">🎶 Đang phát: Playlist Tự Động (Auto Loop)</div>
+
     <div class="gifts-grid" id="giftsContainer"></div>
 
-    <!-- Modal Lời Chúc -->
     <div class="modal" id="wishModal">
         <div class="modal-content">
             <div class="modal-icon" id="modalIcon">🎁</div>
@@ -248,10 +237,8 @@
         </div>
     </div>
 
-    <!-- Script YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // 20 Lời chúc & Phần quà KHÔNG TRÙNG LẶP
         const wishes = [
             { icon: "🌸", text: "Chúc bạn ngày 20/10 xinh đẹp rực rỡ như hoa xinh, luôn luôn tự tin và tỏa sáng!" },
             { icon: "🍫", text: "Tặng bạn sự ngọt ngào! Chúc cuộc sống của bạn luôn tràn ngập niềm vui và yêu thương." },
@@ -275,28 +262,29 @@
             { icon: "❤️", text: "Cuối cùng, chúc bạn luôn được trân trọng, yêu thương và mãi mãi hạnh phúc!" }
         ];
 
-        // Render 20 Hộp quà
+        // Danh sách ID nhạc tự động chuyển (Playlist gồm các bài lofi/chill hay)
+        const playlist = [
+            { id: "2Vv-BfVoq4g", name: "Ed Sheeran - Perfect" },
+            { id: "5qap5aO4i9A", name: "Lofi Hip Hop Radio - Beats to Relax/Study" },
+            { id: "jfKfPfyJRdk", name: "Lofi Girl - Chill Radio" }
+        ];
+        let currentSongIndex = 0;
+
         const container = document.getElementById('giftsContainer');
         wishes.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'gift-card';
             card.id = `gift-${index}`;
-            card.innerHTML = `
-                <span class="gift-icon">🎁</span>
-                <span class="gift-title">Quà #${index + 1}</span>
-            `;
+            card.innerHTML = `<span class="gift-icon">🎁</span><span class="gift-title">Quà #${index + 1}</span>`;
             card.onclick = () => openGift(index);
             container.appendChild(card);
         });
 
-        // Mở hộp quà
         function openGift(index) {
             const card = document.getElementById(`gift-${index}`);
             if (card.classList.contains('opened')) return;
-
             card.classList.add('opened');
             card.querySelector('.gift-icon').innerText = wishes[index].icon;
-
             document.getElementById('modalIcon').innerText = wishes[index].icon;
             document.getElementById('modalText').innerText = wishes[index].text;
             document.getElementById('wishModal').style.display = 'flex';
@@ -306,7 +294,6 @@
             document.getElementById('wishModal').style.display = 'none';
         }
 
-        // Tự động tạo hoa rơi
         function createFlower() {
             const flower = document.createElement('div');
             flower.className = 'flower-fall';
@@ -315,43 +302,47 @@
             flower.style.animationDuration = Math.random() * 3 + 3 + 's';
             flower.style.fontSize = Math.random() * 12 + 12 + 'px';
             document.body.appendChild(flower);
-
             setTimeout(() => flower.remove(), 6000);
         }
         setInterval(createFlower, 300);
 
-        // Xử lý nhạc Youtube
+        // YouTube API & Auto Loop sau 0.5s chuyển bài
         let player;
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '0',
                 width: '0',
-                videoId: '2Vv-BfVoq4g', // Video nhạc nền mặc định (Perfect - Ed Sheeran)
-                playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': '2Vv-BfVoq4g' },
+                videoId: playlist[0].id,
+                playerVars: { 'autoplay': 1, 'controls': 0 },
                 events: {
-                    'onReady': (e) => e.target.playVideo()
+                    'onReady': (e) => e.target.playVideo(),
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
-        function changeMusic() {
-            const url = document.getElementById('ytUrlInput').value.trim();
-            if (!url) return alert("Vui lòng dán link YouTube!");
-
-            let videoId = "";
-            if (url.includes("v=")) {
-                videoId = url.split("v=")[1].split("&")[0];
-            } else if (url.includes("youtu.be/")) {
-                videoId = url.split("youtu.be/")[1].split("?")[0];
-            } else {
-                videoId = url;
+        function onPlayerStateChange(event) {
+            // Khi bài hát kết thúc (State = 0)
+            if (event.data === YT.PlayerState.ENDED) {
+                setTimeout(() => {
+                    currentSongIndex = (currentSongIndex + 1) % playlist.length;
+                    player.loadVideoById(playlist[currentSongIndex].id);
+                    document.getElementById('songTitle').innerText = `🎶 Đang phát: ${playlist[currentSongIndex].name}`;
+                }, 500); // Chờ đúng 0,5 giây rồi đổi bài tiếp theo
             }
+        }
 
-            if (videoId && player && player.loadVideoById) {
+        function changeMusic() {
+            const val = document.getElementById('ytUrlInput').value.trim();
+            if (!val) return alert("Vui lòng nhập ID hoặc Link YouTube!");
+            let videoId = val;
+            if (val.includes("v=")) videoId = val.split("v=")[1].split("&")[0];
+            else if (val.includes("youtu.be/")) videoId = val.split("youtu.be/")[1].split("?")[0];
+
+            if (player && player.loadVideoById) {
                 player.loadVideoById(videoId);
-                alert("Đã đổi nhạc thành công! 🎉");
-            } else {
-                alert("Link YouTube không hợp lệ!");
+                document.getElementById('songTitle').innerText = `🎶 Đang phát: Nhạc tự chọn`;
+                alert("Đã chuyển bài thành công! 🎉");
             }
         }
     </script>
