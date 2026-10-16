@@ -1,2 +1,208 @@
-no
-no no
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chúc Mừng Ngày 20/10 💖</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Hiệu ứng trái tim rơi */
+        .heart-fall {
+            position: absolute;
+            top: -20px;
+            color: #ff4d6d;
+            font-size: 20px;
+            animation: fall linear infinite;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes fall {
+            to {
+                transform: translateY(105vh) rotate(360deg);
+            }
+        }
+
+        /* Khung lá thư / Hộp quà */
+        .card-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            z-index: 10;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        .gift-btn {
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: all 0.2s ease;
+            margin: 10px;
+        }
+        .gift-btn:hover {
+            transform: scale(1.05);
+            background-color: #ff6b81;
+        }
+
+        .no-btn {
+            background-color: #747d8c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            position: absolute;
+            transition: 0.1s ease;
+        }
+
+        /* Vùng hiển thị lời chúc */
+        .message-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff5f6;
+            border-radius: 12px;
+            border: 2px dashed #ff85a2;
+            color: #444;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100px;
+            text-align: left;
+        }
+
+        /* Nút nhạc ở góc màn hình */
+        .music-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #ff4d6d;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nút bật nhạc -->
+    <button class="music-btn" onclick="toggleMusic()">🎵</button>
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Khung chính -->
+    <div class="card-container">
+        <h1>✨ Chúc Mừng 20/10 ✨</h1>
+        <p style="color: #666; margin-bottom: 20px;">Gửi tới các bạn nữ đáng yêu nhất!</p>
+        
+        <div id="btn-group">
+            <button class="gift-btn" onclick="openGift()">🎁 Mở quà ngay</button>
+            <button class="no-btn" id="noBtn" onmouseover="dodgeBtn()">Không nhận</button>
+        </div>
+
+        <div class="message-box" id="messageBox">
+            <p id="typedText"></p>
+        </div>
+    </div>
+
+    <script>
+        // 1. Tạo hiệu ứng trái tim rơi
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-fall');
+            heart.innerHTML = ['🌸', '💖', '✨', '🌷', '🎀'][Math.floor(Math.random() * 5)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.fontSize = Math.random() * 15 + 15 + 'px';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+        setInterval(createHeart, 300);
+
+        // 2. Nút "Không nhận" tự động né
+        function dodgeBtn() {
+            const btn = document.getElementById('noBtn');
+            const x = Math.random() * (window.innerWidth - 120);
+            const y = Math.random() * (window.innerHeight - 50);
+            btn.style.position = 'fixed';
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
+        }
+
+        // 3. Hiệu ứng gõ chữ lời chúc
+        const wishText = "Chúc các bạn nữ ngày 20/10 luôn luôn xinh đẹp, rạng rỡ, nhiều may mắn và luôn vui vẻ hạnh phúc! Chúc các bạn luôn học tốt, thành công và nhận được thật nhiều quà ngọt ngào nhé! 💖🎉";
+        let index = 0;
+
+        function openGift() {
+            document.getElementById('btn-group').style.display = 'none';
+            const msgBox = document.getElementById('messageBox');
+            msgBox.style.display = 'block';
+            
+            // Tự động bật nhạc khi mở quà
+            const music = document.getElementById('bgMusic');
+            music.play().catch(() => {});
+
+            typeWriter();
+        }
+
+        function typeWriter() {
+            if (index < wishText.length) {
+                document.getElementById('typedText').innerHTML += wishText.charAt(index);
+                index++;
+                setTimeout(typeWriter, 40);
+            }
+        }
+
+        // 4. Bật / Tắt nhạc
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if (music.paused) {
+                music.play();
+            } else {
+                music.pause();
+            }
+        }
+    </script>
+</body>
+</html>
