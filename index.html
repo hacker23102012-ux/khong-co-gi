@@ -36,7 +36,7 @@
             z-index: 10;
         }
 
-        /* Khung bên Trái & Bên Phải chứa nhân vật */
+        /* Khung bên Trái & Bên Phải chứa ảnh GIF anime */
         .side-panel {
             width: 220px;
             display: flex;
@@ -63,7 +63,7 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
         }
 
         /* Thanh nút điều khiển dưới mỗi nhân vật (< Upload >) */
@@ -238,10 +238,10 @@
 
     <div class="main-layout">
         
-        <!-- BÊN TRÁI: Nhân vật/Sticker 1 -->
+        <!-- BÊN TRÁI: Ảnh GIF anime 1 -->
         <div class="side-panel">
             <div class="char-box">
-                <img id="leftCharImg" src="https://api.iconify.design/noto:girl.svg" alt="Char Left">
+                <img id="leftCharImg" src="https://media.tenor.com/Mdz2s-fOMggAAAAj/the-fragrant-flower-blooms-with-dignity-kaoruko-waguri.gif" alt="Char Left">
             </div>
             <div class="char-controls">
                 <button class="ctrl-btn" onclick="prevLeftChar()">&lt;</button>
@@ -277,10 +277,10 @@
             </div>
         </div>
 
-        <!-- BÊN PHẢI: Nhân vật/Sticker 2 -->
+        <!-- BÊN PHẢI: Ảnh GIF anime 2 -->
         <div class="side-panel">
             <div class="char-box">
-                <img id="rightCharImg" src="https://api.iconify.design/noto:hibiscus.svg" alt="Char Right">
+                <img id="rightCharImg" src="https://media.tenor.com/XgHyWyO2BqAAAAAM/kaoruhanawarintosaku-kaoruko.gif" alt="Char Right">
             </div>
             <div class="char-controls">
                 <button class="ctrl-btn" onclick="prevRightChar()">&lt;</button>
@@ -307,16 +307,14 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Kho ảnh có sẵn cho bên trái & bên phải
+        // Kho ảnh GIF anime cho bên trái & bên phải (đã tích hợp các link của bạn)
         const leftPresets = [
-            "https://api.iconify.design/noto:girl.svg",
-            "https://api.iconify.design/noto:woman-dancing.svg",
-            "https://api.iconify.design/noto:sparkles.svg"
+            "https://media.tenor.com/Mdz2s-fOMggAAAAj/the-fragrant-flower-blooms-with-dignity-kaoruko-waguri.gif",
+            "https://media.tenor.com/lKCbkCShloQAAAAM/horikita.gif"
         ];
         const rightPresets = [
-            "https://api.iconify.design/noto:hibiscus.svg",
-            "https://api.iconify.design/noto:wrapped-gift.svg",
-            "https://api.iconify.design/noto:cherry-blossom.svg"
+            "https://media.tenor.com/XgHyWyO2BqAAAAAM/kaoruhanawarintosaku-kaoruko.gif",
+            "https://media.tenor.com/Mdz2s-fOMggAAAAj/the-fragrant-flower-blooms-with-dignity-kaoruko-waguri.gif"
         ];
         let leftIdx = 0, rightIdx = 0;
 
@@ -337,34 +335,13 @@
             document.getElementById('rightCharImg').src = rightPresets[rightIdx];
         }
 
-        // Tải ảnh lên + TỰ ĐỘNG XÓA NỀN TRẮNG (Canvas Transparent filter)
+        // Tải ảnh lên máy tính
         function uploadChar(event, targetImgId) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-
-                    // Thuật toán tách nền màu trắng/sáng ngầm
-                    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imgData.data;
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i], g = data[i+1], b = data[i+2];
-                        if (r > 230 && g > 230 && b > 230) { // Nếu là màu trắng/gần trắng
-                            data[i+3] = 0; // Làm trong suốt
-                        }
-                    }
-                    ctx.putImageData(imgData, 0, 0);
-                    document.getElementById(targetImgId).src = canvas.toDataURL();
-                };
-                img.src = e.target.result;
+                document.getElementById(targetImgId).src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
