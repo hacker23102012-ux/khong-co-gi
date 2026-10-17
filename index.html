@@ -38,7 +38,7 @@
         header {
             text-align: center;
             color: #d63384;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             z-index: 2;
         }
 
@@ -151,7 +151,26 @@
             color: #d63384;
         }
 
-        /* Modal */
+        /* Nút Không Nhận Quà (Tự động né) */
+        .no-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(116, 125, 140, 0.85);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+            transition: top 0.15s ease, left 0.15s ease;
+        }
+
+        /* Modal Popup */
         .modal {
             display: none;
             position: fixed;
@@ -214,8 +233,13 @@
         <button onclick="changeMusic()">Đổi Nhạc</button>
     </div>
 
+    <!-- 20 Hộp quà -->
     <div class="gifts-grid" id="giftsContainer"></div>
 
+    <!-- Nút chạy trốn -->
+    <button class="no-btn" id="noBtn" onmouseover="dodgeBtn()" ontouchstart="dodgeBtn()">Không nhận quà 😜</button>
+
+    <!-- Modal hiển thị lời chúc -->
     <div class="modal" id="wishModal">
         <div class="modal-content">
             <div class="modal-icon" id="modalIcon">🎁</div>
@@ -260,8 +284,27 @@
             container.appendChild(card);
         });
 
+        // Hàm né nút không nhận
+        function dodgeBtn() {
+            const btn = document.getElementById('noBtn');
+            const btnWidth = btn.offsetWidth || 140;
+            const btnHeight = btn.offsetHeight || 40;
+
+            // Tính toán vị trí ngẫu nhiên không vi phạm cạnh màn hình
+            const maxLeft = window.innerWidth - btnWidth - 20;
+            const maxTop = window.innerHeight - btnHeight - 20;
+
+            const randomLeft = Math.max(20, Math.floor(Math.random() * maxLeft));
+            const randomTop = Math.max(20, Math.floor(Math.random() * maxTop));
+
+            btn.style.left = randomLeft + 'px';
+            btn.style.top = randomTop + 'px';
+            btn.style.bottom = 'auto';
+            btn.style.right = 'auto';
+        }
+
         function openGift(index) {
-            ensurePlayMusic(); // Kích hoạt phát nhạc khi tương tác
+            ensurePlayMusic();
             const card = document.getElementById(`gift-${index}`);
             if (card.classList.contains('opened')) return;
 
@@ -289,10 +332,10 @@
         }
         setInterval(createFlower, 300);
 
-        // Quản lý YouTube Player & Autoplay
+        // YouTube Audio Player
         let player;
         let isPlaying = false;
-        const defaultVideoId = "2Vv-BfVoq4g"; // Nhạc mặc định
+        const defaultVideoId = "2Vv-BfVoq4g";
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
@@ -301,27 +344,19 @@
                 videoId: defaultVideoId,
                 playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 0 },
                 events: {
-                    'onReady': (e) => {
-                        e.target.playVideo();
-                    },
+                    'onReady': (e) => e.target.playVideo(),
                     'onStateChange': onPlayerStateChange
                 }
             });
         }
 
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                isPlaying = true;
-            }
-            // Khi hết bài, chờ 0.5s rồi lặp lại hoặc phát lại bài đó
+            if (event.data === YT.PlayerState.PLAYING) isPlaying = true;
             if (event.data === YT.PlayerState.ENDED) {
-                setTimeout(() => {
-                    player.playVideo();
-                }, 500);
+                setTimeout(() => player.playVideo(), 500);
             }
         }
 
-        // Tự động kích hoạt âm thanh nếu bị trình duyệt chặn
         function ensurePlayMusic() {
             if (player && player.playVideo && !isPlaying) {
                 player.playVideo();
@@ -329,7 +364,6 @@
         }
         document.body.addEventListener('click', ensurePlayMusic, { once: true });
 
-        // Đổi nhạc
         function changeMusic() {
             const val = document.getElementById('ytUrlInput').value.trim();
             if (!val) return;
